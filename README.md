@@ -1,2 +1,2 @@
-# gunash
+# グナシ
 Like Ganache, but sillier.
