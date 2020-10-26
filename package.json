@@ -17,9 +17,14 @@
     "node",
     "rpc",
     "test",
-    "docker"
+    "docker",
+    "geth",
+    "openethereum",
+    "nethermind",
+    "dev",
+    "ci"
   ],
-  "author": "",
+  "author": "Alan Lu",
   "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/cag/gunash/issues"
