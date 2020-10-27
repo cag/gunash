@@ -1,6 +1,6 @@
 {
   "name": "gunash",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Like Ganache, but sillier.",
   "main": "index.js",
   "bin": "./cli.js",

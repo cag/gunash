@@ -6,7 +6,7 @@ Like [Ganache](https://github.com/trufflesuite/ganache-cli), but sillier.
 
 You need <s>whale</s> [Docker](https://www.docker.com/).
 
-Then, this is Ganache, except with less options, more requirements, and [*more bad*](https://github.com/trufflesuite/ganache-cli/issues/257#issuecomment-360053995):
+Then, this is Ganache, except with less options, `--deterministic` accounts, at least 10K eth in each account, more requirements, and [*more bad*](https://github.com/trufflesuite/ganache-cli/issues/257#issuecomment-360053995):
 
 ```sh
 # For NPM
