@@ -91,7 +91,9 @@ const supportedNodes = {
   ganache: new DockerEthNode({
     dockerImage: 'trufflesuite/ganache-cli',
     containerWebsocketPort: 8545,
-    runParams: [],
+    runParams: [
+      '--defaultBalanceEther', '1000000',
+    ],
   }),
 };
 
@@ -146,7 +148,7 @@ async function setupNode({ nodeType }) {
   const accountBalances = (await Promise.all(accounts.map(
     (account) => web3.eth.getBalance(account),
   ))).map(BigInt);
-  const targetBalance = BigInt(web3.utils.toWei('100'));
+  const targetBalance = BigInt(web3.utils.toWei('1000000'));
 
   const [coinbase, ...otherAccounts] = accounts.map(
     (address, i) => ({ address, balance: accountBalances[i] }),
