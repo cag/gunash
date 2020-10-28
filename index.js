@@ -142,13 +142,59 @@ async function setupNode({ nodeType }) {
     '829e924fdf021ba3dbbc4225edfece9aca04b929d6e75613329ca6f1d31c0bb4',
     'b0057716d5917badaf911b193b12b910811c1497b5bada8d7711f758981c3773',
   ];
-  const prefixKeyWith0x = nodeType === 'ganache';
-  await Promise.all(newAccountKeys.map((key) => web3.eth.personal.importRawKey(
-    prefixKeyWith0x ? `0x${key}` : key,
-    '',
-  )));
+  if (nodeType === 'openethereum') {
+    await Promise.all(newAccountKeys.map(
+      (key) => new Promise((resolve, reject) => web3.currentProvider.send(
+        {
+          jsonrpc: '2.0',
+          id: Math.floor((Math.random() * Number.MAX_SAFE_INTEGER)),
+          method: 'parity_newAccountFromSecret',
+          params: [`0x${key}`, ''],
+        },
+        (err, data) => {
+          if (err) return reject(err);
+          if (data && data.error) return reject(data.error);
+          return resolve(data && data.result);
+        },
+      )),
+    ));
+  } else if (nodeType !== 'nethermind') {
+    const prefixKeyWith0x = nodeType === 'ganache';
+    await Promise.all(newAccountKeys.map((key) => web3.eth.personal.importRawKey(
+      prefixKeyWith0x ? `0x${key}` : key,
+      '',
+    )));
+  }
 
   const accounts = await web3.eth.getAccounts();
+  const accountsLC = accounts.map(addr => addr.toLowerCase());
+  const requiredAccounts = [
+    '0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1',
+    '0xFFcf8FDEE72ac11b5c542428B35EEF5769C409f0',
+    '0xE11BA2b4D45Eaed5996Cd0823791E0C93114882d',
+    '0x22d491Bde2303f2f43325b2108D26f1eAbA1e32b',
+    '0x95cED938F7991cd0dFcb48F0a06a40FA1aF46EBC',
+    '0xd03ea8624C8C5987235048901fB614fDcA89b117',
+    '0x3E5e9111Ae8eB78Fe1CC3bb8915d5D461F3Ef9A9',
+    '0x28a8746e75304c0780E011BEd21C72cD78cd535E',
+    '0xACa94ef8bD5ffEE41947b4585a84BdA5a3d3DA6E',
+    '0x1dF62f291b2E969fB0849d99D9Ce41e2F137006e',
+  ];
+  requiredAccounts.forEach((requiredAccount) => {
+    if (!accountsLC.includes(requiredAccount.toLowerCase())) {
+      accounts.push(requiredAccount);
+    }
+  });
+
+  const targetNumAccounts = 10;
+  if (accounts.length < targetNumAccounts) {
+    const numNewAccounts = targetNumAccounts - accounts.length;
+    accounts.push(...(
+      await Promise.all(Array.from(
+        { length: numNewAccounts },
+        () => web3.eth.personal.newAccount(''),
+      ))));
+  }
 
   if (nodeType !== 'nethermind') {
     const unlockTimeout = nodeType === 'openethereum' ? '0x0' : 0;
