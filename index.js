@@ -72,6 +72,7 @@ const supportedNodes = {
     runParams: [
       '--config', 'dev-insecure',
       '--geth',
+      '--jsonrpc-cors', 'all',
       '--ws-interface', 'all',
       '--ws-apis', 'all',
       '--ws-origins', 'all',
