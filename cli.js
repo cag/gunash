@@ -14,6 +14,10 @@ yargsObj.command(['start', '*'], 'Starts a Gunash node', {
     choices: supportedNodeTypes,
     type: 'string',
   },
+  noVMErrorsOnRPCResponse: {
+    describe: '(Ganache only) Suppress VM errors',
+    type: 'boolean',
+  },
 }, start);
 
 yargsObj.command('stop', 'Stops the running Gunash node', {}, stop);

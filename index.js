@@ -48,7 +48,7 @@ class DockerEthNode {
 }
 
 const supportedNodes = {
-  geth: new DockerEthNode({
+  geth: () => new DockerEthNode({
     dockerImage: 'ethereum/client-go',
     containerWebsocketPort: 8546,
     runParams: [
@@ -66,7 +66,7 @@ const supportedNodes = {
       '--vmdebug',
     ],
   }),
-  openethereum: new DockerEthNode({
+  openethereum: () => new DockerEthNode({
     dockerImage: 'openethereum/openethereum',
     containerWebsocketPort: 8546,
     runParams: [
@@ -79,7 +79,7 @@ const supportedNodes = {
       '--ws-hosts', 'all',
     ],
   }),
-  nethermind: new DockerEthNode({
+  nethermind: () => new DockerEthNode({
     dockerImage: 'nethermind/nethermind',
     containerWebsocketPort: 8546,
     runParams: [
@@ -89,12 +89,13 @@ const supportedNodes = {
       '--JsonRpc.WebSocketsPort', '8546',
     ],
   }),
-  ganache: new DockerEthNode({
+  ganache: ({ noVMErrorsOnRPCResponse }) => new DockerEthNode({
     dockerImage: 'trufflesuite/ganache-cli',
     containerWebsocketPort: 8545,
     runParams: [
       '--deterministic',
       '--defaultBalanceEther', '1000000',
+      ...(noVMErrorsOnRPCResponse ? ['--noVMErrorsOnRPCResponse'] : []),
     ],
   }),
 };
@@ -224,10 +225,12 @@ async function setupNode({ nodeType }) {
 
 async function start(config = {}) {
   const { nodeType } = config;
-  const node = supportedNodes[nodeType];
-  if (node == null) {
+  const makeNode = supportedNodes[nodeType];
+  if (makeNode == null) {
     throw new UnsupportedNodeError(nodeType);
   }
+
+  const node = makeNode(config);
 
   await node.pullImage();
   await node.run();
